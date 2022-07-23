@@ -1,4 +1,22 @@
-address = "127.0.0.1:3306"
-username = "root"
-password = "root"
-database = "blog_service"
+[Server]
+RunMode = "debug"
+HttpPort = "8080"
+ReadTimeout = 60
+WriteTimeout = 60
+
+[App]
+DefaultPageSize = 10
+MaxPageSize = 100
+LogSavePath = "storage/logs"
+LogFileName = "app"
+LogFileExt = ".log"
+
+[Database]
+Address = "127.0.0.1:3306"
+Username = "root"
+Password = "root"
+Database = "blog_service"
+Charset = "utf8"
+ParseTime = true
+MaxIdleConns = 10
+MaxOpenConns = 30

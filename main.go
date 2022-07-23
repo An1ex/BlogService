@@ -5,29 +5,75 @@ import (
 	"net/http"
 	"time"
 
-	"BlogService/config"
-	"BlogService/internal/dao"
+	"BlogService/global"
+	"BlogService/internal/model"
 	"BlogService/internal/routers"
+	"BlogService/pkg/logger"
+
+	"github.com/BurntSushi/toml"
+	"github.com/gin-gonic/gin"
 )
 
-func moduleInit() {
-	dao.Init()
+func init() {
+	err := loadConfig()
+	if err != nil {
+		log.Fatalf("[config] %v", err)
+	}
+
+	err = initLogger()
+	if err != nil {
+		log.Fatalf("[database] %v", err)
+	}
+
+	//前提：create database blog_service;
+	err = initDBEngine()
+	if err != nil {
+		log.Fatalf("[database] %v", err)
+	}
 }
 
 func main() {
-	//load config
-	if err := config.Init(); err != nil {
-		log.Fatalf("[config] %v", err)
-	}
-	moduleInit()
-
+	gin.SetMode(global.Config.Server.RunMode)
 	r := routers.NewRouter()
 
 	s := &http.Server{
-		Addr:         ":8080",
+		Addr:         ":" + global.Config.Server.HttpPort,
 		Handler:      r,
-		ReadTimeout:  10 * time.Second,
-		WriteTimeout: 10 * time.Second,
+		ReadTimeout:  global.Config.Server.ReadTimeout,
+		WriteTimeout: global.Config.Server.WriteTimeout,
 	}
+
 	s.ListenAndServe()
+}
+
+func loadConfig() error {
+	_, err := toml.DecodeFile("config/config.toml", &global.Config)
+	if err != nil {
+		return err
+	}
+	global.Config.Server.ReadTimeout *= time.Second
+	global.Config.Server.WriteTimeout *= time.Second
+	return nil
+}
+
+func initDBEngine() error {
+	var err error
+	global.DBEngine, err = model.NewDBEngine(global.Config.BD)
+	if err != nil {
+		return err
+	}
+	err = model.MigrateDB()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func initLogger() error {
+	var err error
+	global.Logger, err = logger.NewLogger()
+	if err != nil {
+		return err
+	}
+	return nil
 }

@@ -1,16 +1,25 @@
 package routers
 
 import (
+	_ "BlogService/docs"
 	v1 "BlogService/internal/controllers/v1"
+	"BlogService/internal/middleware"
+
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func NewRouter() *gin.Engine {
 	r := gin.Default()
+	r.Use(middleware.Translation())
 
 	t := v1.NewTag()
 	a := v1.NewArticle()
-	apiV1 := r.Group("api/v1")
+
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+	apiV1 := r.Group("/api/v1")
 	{
 		apiV1.POST("/tags", t.Create)
 		apiV1.DELETE("/tags/:id", t.Delete)

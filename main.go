@@ -32,6 +32,13 @@ func init() {
 	}
 }
 
+// @title           博客平台
+// @version         1.0
+// @description     一个完整的博客后端
+// @termsOfService  https://github.com/An1ex/BlogService
+// @license.name Apache 2.0
+// @license.url https://www.apache.org/licenses/LICENSE-2.0.html
+// @host localhost:8080
 func main() {
 	gin.SetMode(global.Config.Server.RunMode)
 	r := routers.NewRouter()

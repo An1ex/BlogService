@@ -11,9 +11,9 @@ import (
 )
 
 type Model struct {
-	gorm.Model
-	CreateBy string `json:"create_by"`
-	UpdateBy string `json:"update_by"`
+	*gorm.Model        //嵌套匿名结构体
+	CreateBy    string `json:"create_by"`
+	UpdateBy    string `json:"update_by"`
 }
 
 func NewDBEngine(database setting.DB) (*gorm.DB, error) {

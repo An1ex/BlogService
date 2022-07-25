@@ -40,16 +40,16 @@ func (r *Response) ToResponseList(list interface{}, totalRows int) {
 }
 
 func (r Response) ToErrorResponse(err *errcode.Error) {
-	if len(err.Details()) > 0 {
+	if len(err.Details) > 0 {
 		r.ctx.JSON(err.StatusCode(), gin.H{
-			"code":    err.Code(),
-			"msg":     err.Msg(),
-			"details": err.Details(),
+			"code":    err.Code,
+			"msg":     err.Msg,
+			"details": err.Details,
 		})
 	} else {
 		r.ctx.JSON(err.StatusCode(), gin.H{
-			"code": err.Code(),
-			"msg":  err.Msg(),
+			"code": err.Code,
+			"msg":  err.Msg,
 		})
 	}
 }

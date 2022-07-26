@@ -88,7 +88,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "maxLength": 100,
-                        "minLength": 3,
+                        "minLength": 2,
                         "description": "文章标题",
                         "name": "title",
                         "in": "body",
@@ -98,7 +98,7 @@ const docTemplate = `{
                         }
                     },
                     {
-                        "minLength": 3,
+                        "minLength": 2,
                         "description": "文章简介",
                         "name": "desc",
                         "in": "body",
@@ -107,7 +107,7 @@ const docTemplate = `{
                         }
                     },
                     {
-                        "minLength": 3,
+                        "minLength": 2,
                         "description": "文章内容",
                         "name": "content",
                         "in": "body",
@@ -118,7 +118,7 @@ const docTemplate = `{
                     },
                     {
                         "maxLength": 100,
-                        "minLength": 3,
+                        "minLength": 2,
                         "description": "文章封面",
                         "name": "cover_image_url",
                         "in": "body",
@@ -128,7 +128,7 @@ const docTemplate = `{
                     },
                     {
                         "maxLength": 100,
-                        "minLength": 3,
+                        "minLength": 2,
                         "description": "创建者",
                         "name": "created_by",
                         "in": "body",
@@ -189,25 +189,21 @@ const docTemplate = `{
                     },
                     {
                         "maxLength": 100,
+                        "type": "string",
                         "description": "文章标题",
                         "name": "title",
-                        "in": "body",
-                        "schema": {
-                            "type": "string"
-                        }
+                        "in": "query"
                     },
                     {
                         "enum": [
                             0,
                             1
                         ],
+                        "type": "integer",
                         "default": 1,
                         "description": "状态",
                         "name": "state",
-                        "in": "body",
-                        "schema": {
-                            "type": "integer"
-                        }
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -246,7 +242,7 @@ const docTemplate = `{
                     },
                     {
                         "maxLength": 100,
-                        "minLength": 3,
+                        "minLength": 2,
                         "description": "文章标题",
                         "name": "title",
                         "in": "body",
@@ -255,7 +251,7 @@ const docTemplate = `{
                         }
                     },
                     {
-                        "minLength": 3,
+                        "minLength": 2,
                         "description": "文章简介",
                         "name": "desc",
                         "in": "body",
@@ -264,7 +260,7 @@ const docTemplate = `{
                         }
                     },
                     {
-                        "minLength": 3,
+                        "minLength": 2,
                         "description": "文章内容",
                         "name": "content",
                         "in": "body",
@@ -274,7 +270,7 @@ const docTemplate = `{
                     },
                     {
                         "maxLength": 100,
-                        "minLength": 3,
+                        "minLength": 2,
                         "description": "文章封面",
                         "name": "cover_image_url",
                         "in": "body",
@@ -297,7 +293,7 @@ const docTemplate = `{
                     },
                     {
                         "maxLength": 100,
-                        "minLength": 3,
+                        "minLength": 2,
                         "description": "修改者",
                         "name": "update_by",
                         "in": "body",
@@ -434,7 +430,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "maxLength": 100,
-                        "minLength": 3,
+                        "minLength": 2,
                         "description": "标签名称",
                         "name": "name",
                         "in": "body",
@@ -458,7 +454,7 @@ const docTemplate = `{
                     },
                     {
                         "maxLength": 100,
-                        "minLength": 3,
+                        "minLength": 2,
                         "description": "创建者",
                         "name": "created_by",
                         "in": "body",
@@ -506,25 +502,21 @@ const docTemplate = `{
                     },
                     {
                         "maxLength": 100,
+                        "type": "string",
                         "description": "标签名称",
                         "name": "name",
-                        "in": "body",
-                        "schema": {
-                            "type": "string"
-                        }
+                        "in": "query"
                     },
                     {
                         "enum": [
                             0,
                             1
                         ],
+                        "type": "integer",
                         "default": 1,
                         "description": "状态",
                         "name": "state",
-                        "in": "body",
-                        "schema": {
-                            "type": "integer"
-                        }
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -563,7 +555,7 @@ const docTemplate = `{
                     },
                     {
                         "maxLength": 100,
-                        "minLength": 3,
+                        "minLength": 2,
                         "description": "标签名称",
                         "name": "name",
                         "in": "body",
@@ -586,7 +578,7 @@ const docTemplate = `{
                     },
                     {
                         "maxLength": 100,
-                        "minLength": 3,
+                        "minLength": 2,
                         "description": "修改者",
                         "name": "update_by",
                         "in": "body",
@@ -707,7 +699,7 @@ const docTemplate = `{
                 "content": {
                     "type": "string"
                 },
-                "coverImageURL": {
+                "cover_image_url": {
                     "type": "string"
                 },
                 "create_by": {
@@ -786,7 +778,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "state": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "update_by": {
                     "type": "string"

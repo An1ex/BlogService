@@ -2,8 +2,8 @@ package model
 
 type ArticleTag struct {
 	*Model
-	TagID     string `json:"tagID"`
-	ArticleID string `json:"articleID"`
+	TagID     uint `json:"tag_id"`
+	ArticleID uint `json:"article_id"`
 }
 
 func (a ArticleTag) TableName() string {

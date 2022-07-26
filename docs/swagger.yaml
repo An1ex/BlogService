@@ -31,7 +31,7 @@ definitions:
     properties:
       content:
         type: string
-      coverImageURL:
+      cover_image_url:
         type: string
       create_by:
         type: string
@@ -83,7 +83,7 @@ definitions:
       name:
         type: string
       state:
-        type: string
+        type: integer
       update_by:
         type: string
       updatedAt:
@@ -145,20 +145,20 @@ paths:
       - description: 文章标题
         in: body
         maxLength: 100
-        minLength: 3
+        minLength: 2
         name: title
         required: true
         schema:
           type: string
       - description: 文章简介
         in: body
-        minLength: 3
+        minLength: 2
         name: desc
         schema:
           type: string
       - description: 文章内容
         in: body
-        minLength: 3
+        minLength: 2
         name: content
         required: true
         schema:
@@ -166,14 +166,14 @@ paths:
       - description: 文章封面
         in: body
         maxLength: 100
-        minLength: 3
+        minLength: 2
         name: cover_image_url
         schema:
           type: string
       - description: 创建者
         in: body
         maxLength: 100
-        minLength: 3
+        minLength: 2
         name: created_by
         required: true
         schema:
@@ -235,20 +235,18 @@ paths:
         required: true
         type: integer
       - description: 文章标题
-        in: body
+        in: query
         maxLength: 100
         name: title
-        schema:
-          type: string
+        type: string
       - default: 1
         description: 状态
         enum:
         - 0
         - 1
-        in: body
+        in: query
         name: state
-        schema:
-          type: integer
+        type: integer
       produces:
       - application/json
       responses:
@@ -275,26 +273,26 @@ paths:
       - description: 文章标题
         in: body
         maxLength: 100
-        minLength: 3
+        minLength: 2
         name: title
         schema:
           type: string
       - description: 文章简介
         in: body
-        minLength: 3
+        minLength: 2
         name: desc
         schema:
           type: string
       - description: 文章内容
         in: body
-        minLength: 3
+        minLength: 2
         name: content
         schema:
           type: string
       - description: 文章封面
         in: body
         maxLength: 100
-        minLength: 3
+        minLength: 2
         name: cover_image_url
         schema:
           type: string
@@ -310,7 +308,7 @@ paths:
       - description: 修改者
         in: body
         maxLength: 100
-        minLength: 3
+        minLength: 2
         name: update_by
         required: true
         schema:
@@ -378,7 +376,7 @@ paths:
       - description: 标签名称
         in: body
         maxLength: 100
-        minLength: 3
+        minLength: 2
         name: name
         required: true
         schema:
@@ -395,7 +393,7 @@ paths:
       - description: 创建者
         in: body
         maxLength: 100
-        minLength: 3
+        minLength: 2
         name: created_by
         required: true
         schema:
@@ -448,20 +446,18 @@ paths:
         required: true
         type: integer
       - description: 标签名称
-        in: body
+        in: query
         maxLength: 100
         name: name
-        schema:
-          type: string
+        type: string
       - default: 1
         description: 状态
         enum:
         - 0
         - 1
-        in: body
+        in: query
         name: state
-        schema:
-          type: integer
+        type: integer
       produces:
       - application/json
       responses:
@@ -488,7 +484,7 @@ paths:
       - description: 标签名称
         in: body
         maxLength: 100
-        minLength: 3
+        minLength: 2
         name: name
         schema:
           type: string
@@ -504,7 +500,7 @@ paths:
       - description: 修改者
         in: body
         maxLength: 100
-        minLength: 3
+        minLength: 2
         name: update_by
         required: true
         schema:

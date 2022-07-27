@@ -2,6 +2,8 @@ package model
 
 import (
 	"BlogService/pkg/app"
+
+	"github.com/pkg/errors"
 	"gorm.io/gorm"
 )
 
@@ -27,7 +29,7 @@ func (t Tag) Count(db *gorm.DB) (int64, error) {
 	}
 	err := db.Model(&t).Where("state = ?", t.State).Count(&count).Error
 	if err != nil {
-		return 0, err
+		return 0, errors.Wrap(err, "database: failed to count tags")
 	}
 	return count, nil
 }
@@ -41,20 +43,29 @@ func (t Tag) List(db *gorm.DB, pageOffset, pageSize int) ([]*Tag, error) {
 		db = db.Where("name = ?", t.Name)
 	}
 	if err := db.Where("state = ?", t.State).Find(&tags).Error; err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "database: failed to get tag list")
 	}
 	return tags, nil
 }
 
 func (t Tag) Create(db *gorm.DB) error {
-	return db.Create(&t).Error
+	if err := db.Create(&t).Error; err != nil {
+		return errors.Wrap(err, "database: failed to create tag")
+	}
+	return nil
 }
 
 func (t Tag) Update(db *gorm.DB, values map[string]interface{}) error {
 	db = db.Model(t).Where("id = ?", t.Model.ID)
-	return db.Updates(values).Error
+	if err := db.Updates(values).Error; err != nil {
+		return errors.Wrap(err, "database: failed to update tag")
+	}
+	return nil
 }
 
 func (t Tag) Delete(db *gorm.DB) error {
-	return db.Where("id = ?", t.Model.ID).Delete(&t).Error
+	if err := db.Where("id = ?", t.Model.ID).Delete(&t).Error; err != nil {
+		return errors.Wrap(err, "database: failed to delete tag")
+	}
+	return nil
 }

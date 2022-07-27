@@ -66,7 +66,7 @@ func (t Tag) List(c *gin.Context) {
 		})
 		if err != nil { //统计标签数量失败
 			global.Logger.WithFields(log.Fields{
-				"error": err,
+				"error": err.Error(),
 			}).Error("Count Tag failed!")
 			response.ToErrorResponse(errcode.ErrorCountTagFail)
 			return
@@ -75,7 +75,7 @@ func (t Tag) List(c *gin.Context) {
 		tags, err := svc.GetTagList(&param, &pager)
 		if err != nil { //获取标签列表失败
 			global.Logger.WithFields(log.Fields{
-				"error": err,
+				"error": err.Error(),
 			}).Error("Get Tag List failed!")
 			response.ToErrorResponse(errcode.ErrorGetTagListFail)
 			return
@@ -110,7 +110,7 @@ func (t Tag) Create(c *gin.Context) {
 		err := svc.CreateTag(&param)
 		if err != nil { //创建标签失败
 			global.Logger.WithFields(log.Fields{
-				"error": err,
+				"error": err.Error(),
 			}).Error("Create Tag failed!")
 			response.ToErrorResponse(errcode.ErrorCreateTagFail)
 			return
@@ -149,7 +149,7 @@ func (t Tag) Update(c *gin.Context) {
 		err := svc.UpdateTag(&param)
 		if err != nil { //更新标签失败
 			global.Logger.WithFields(log.Fields{
-				"error": err,
+				"error": err.Error(),
 			}).Error("Update Tag failed")
 			response.ToErrorResponse(errcode.ErrorUpdateTagFail)
 			return
@@ -185,7 +185,7 @@ func (t Tag) Delete(c *gin.Context) {
 		err := svc.DeleteTag(&param)
 		if err != nil {
 			global.Logger.WithFields(log.Fields{
-				"error": err,
+				"error": err.Error(),
 			}).Error("Delete Tag failed!")
 			response.ToErrorResponse(errcode.ErrorDeleteTagFail)
 			return

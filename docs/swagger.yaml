@@ -89,6 +89,13 @@ definitions:
       updatedAt:
         type: string
     type: object
+  service.FileInfo:
+    properties:
+      accessUrl:
+        type: string
+      name:
+        type: string
+    type: object
 host: localhost:8080
 info:
   contact: {}
@@ -302,7 +309,6 @@ paths:
         - 1
         in: body
         name: state
-        required: true
         schema:
           type: integer
       - description: 修改者
@@ -494,7 +500,6 @@ paths:
         - 1
         in: body
         name: state
-        required: true
         schema:
           type: integer
       - description: 修改者
@@ -523,4 +528,38 @@ paths:
           schema:
             $ref: '#/definitions/errcode.Error'
       summary: 更新标签
+  /api/v1/upload/file:
+    post:
+      parameters:
+      - description: 上传文件
+        in: formData
+        name: file
+        required: true
+        type: file
+      - description: 文件格式
+        enum:
+        - 1
+        - 2
+        - 3
+        in: body
+        name: type
+        required: true
+        schema:
+          type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/service.FileInfo'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 上传文件
 swagger: "2.0"

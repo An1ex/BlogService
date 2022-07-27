@@ -26,4 +26,5 @@ gen
 config/*.toml
 
 storage/logs/*.log
+storage/uploads/*
 

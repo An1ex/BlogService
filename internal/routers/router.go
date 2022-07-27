@@ -1,7 +1,10 @@
 package routers
 
 import (
+	"net/http"
+
 	_ "BlogService/docs"
+	"BlogService/global"
 	v1 "BlogService/internal/controllers/v1"
 	"BlogService/internal/middleware"
 
@@ -16,8 +19,10 @@ func NewRouter() *gin.Engine {
 
 	t := v1.NewTag()
 	a := v1.NewArticle()
+	f := v1.NewUpload()
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	r.StaticFS("/static", http.Dir(global.Config.App.UploadSavePath))
 
 	apiV1 := r.Group("/api/v1")
 	{
@@ -34,6 +39,8 @@ func NewRouter() *gin.Engine {
 		apiV1.PATCH("articles/:id/state", a.Update)
 		apiV1.GET("/articles/:id", a.Get)
 		apiV1.GET("/articles", a.List)
+
+		apiV1.POST("/upload/file", f.UploadFile)
 	}
 	return r
 }

@@ -10,6 +10,10 @@ MaxPageSize = 100
 LogSavePath = "storage/logs"
 LogFileName = "app"
 LogFileExt = ".log"
+UploadSavePath = "storage/uploads"
+UploadServerUrl = "localhost:8080/static"
+UploadImageMaxSize = 5
+UploadImageAllowExts = [".jpg", ".jpeg", ".png"]
 
 [Database]
 Address = "127.0.0.1:3306"

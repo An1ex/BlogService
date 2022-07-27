@@ -286,7 +286,6 @@ const docTemplate = `{
                         "description": "状态",
                         "name": "state",
                         "in": "body",
-                        "required": true,
                         "schema": {
                             "type": "integer"
                         }
@@ -571,7 +570,6 @@ const docTemplate = `{
                         "description": "状态",
                         "name": "state",
                         "in": "body",
-                        "required": true,
                         "schema": {
                             "type": "integer"
                         }
@@ -631,6 +629,57 @@ const docTemplate = `{
                         "description": "成功",
                         "schema": {
                             "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "请求错误",
+                        "schema": {
+                            "$ref": "#/definitions/errcode.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/errcode.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/upload/file": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "上传文件",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "上传文件",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "enum": [
+                            1,
+                            2,
+                            3
+                        ],
+                        "description": "文件格式",
+                        "name": "type",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/service.FileInfo"
                         }
                     },
                     "400": {
@@ -784,6 +833,17 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "service.FileInfo": {
+            "type": "object",
+            "properties": {
+                "accessUrl": {
+                    "type": "string"
+                },
+                "name": {
                     "type": "string"
                 }
             }

@@ -21,10 +21,16 @@ func NewRouter() *gin.Engine {
 	a := v1.NewArticle()
 	f := v1.NewUpload()
 
+	//注册Swagger接口路由
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	//注册静态文件路由
 	r.StaticFS("/static", http.Dir(global.Config.App.UploadSavePath))
+	//注册鉴权路由
+	r.GET("/auth", v1.GetAuth)
 
+	//注册博客功能路由
 	apiV1 := r.Group("/api/v1")
+	apiV1.Use(middleware.JWT())
 	{
 		apiV1.POST("/tags", t.Create)
 		apiV1.DELETE("/tags/:id", t.Delete)

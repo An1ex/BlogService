@@ -24,3 +24,8 @@ Charset = "utf8"
 ParseTime = true
 MaxIdleConns = 10
 MaxOpenConns = 30
+
+[JWT]
+Secret = "service_secret"
+Issuer = "blog_service"
+Expire = 7200

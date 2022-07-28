@@ -60,6 +60,7 @@ func loadConfig() error {
 	}
 	global.Config.Server.ReadTimeout *= time.Second
 	global.Config.Server.WriteTimeout *= time.Second
+	global.Config.JWT.Expire *= time.Second
 	return nil
 }
 

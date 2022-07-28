@@ -8,6 +8,7 @@ type Config struct {
 	Server Server `toml:"Server"`
 	App    App    `toml:"App"`
 	BD     DB     `toml:"Database"`
+	JWT    JWT    `toml:"JWT"`
 }
 
 type Server struct {
@@ -38,4 +39,10 @@ type DB struct {
 	ParseTime    bool
 	MaxIdleConns int
 	MaxOpenConns int
+}
+
+type JWT struct {
+	Secret string
+	Issuer string
+	Expire time.Duration
 }

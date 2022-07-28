@@ -2,19 +2,36 @@ package routers
 
 import (
 	"net/http"
+	"time"
 
 	_ "BlogService/docs"
 	"BlogService/global"
 	v1 "BlogService/internal/controllers/v1"
 	"BlogService/internal/middleware"
+	"BlogService/pkg/limiter"
 
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
+var buckets []limiter.BucketRule
+
 func NewRouter() *gin.Engine {
-	r := gin.Default()
+	r := gin.New()
+	if global.Config.Server.RunMode == "debug" {
+		r.Use(gin.Logger())
+		r.Use(gin.Recovery())
+	} else {
+		r.Use(middleware.AccessLog())
+		r.Use(middleware.Recovery())
+	}
+
+	initBuckets()
+	methodLimiter := limiter.NewMethodLimiter().AddBuckets(buckets...)
+	r.Use(middleware.Limiter(methodLimiter))
+
+	r.Use(middleware.ContextTimeout())
 	r.Use(middleware.Translation())
 
 	t := v1.NewTag()
@@ -49,4 +66,16 @@ func NewRouter() *gin.Engine {
 		apiV1.POST("/upload/file", f.UploadFile)
 	}
 	return r
+}
+
+//读取配置文件，初始化令牌桶
+func initBuckets() {
+	for _, lv := range global.Config.Limiter {
+		buckets = append(buckets, limiter.BucketRule{
+			Key:          lv.Key,
+			FillInterval: lv.FillInterval * time.Second,
+			Capacity:     lv.Capacity,
+			Quantum:      lv.Quantum,
+		})
+	}
 }

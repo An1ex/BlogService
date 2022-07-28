@@ -3,6 +3,7 @@ RunMode = "debug"
 HttpPort = "8080"
 ReadTimeout = 60
 WriteTimeout = 60
+ContextTimeout = 60
 
 [App]
 DefaultPageSize = 10
@@ -29,3 +30,19 @@ MaxOpenConns = 30
 Secret = "service_secret"
 Issuer = "blog_service"
 Expire = 7200
+
+[Email]
+Host = "smtp.qq.com"
+Port = 465
+UserName = "xxxx@qq.com"
+Password = "xxxxxxxxx"
+IsSSL = true
+From = "xxxx@qq.com"
+To = ["xxxx@qq.com", "xxxx@qq.com", xxxx@qq.com]
+
+[Limiter]
+[Limiter.auth]
+Key = "/auth"
+FillInterval = 1    # FillInterval * time.Second
+Capacity = 10
+Quantum = 10

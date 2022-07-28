@@ -19,7 +19,7 @@ func (a Auth) Get(db *gorm.DB) (Auth, error) {
 	var auth Auth
 	db = db.Where("app_key = ? AND app_secret = ?", a.AppKey, a.AppSecret)
 	err := db.First(&auth).Error
-	if err != nil && err != gorm.ErrRecordNotFound {
+	if err != nil && err == gorm.ErrRecordNotFound {
 		return auth, errors.Wrap(err, "database: failed to get auth")
 	}
 	return auth, nil

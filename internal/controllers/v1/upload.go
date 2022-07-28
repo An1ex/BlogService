@@ -49,7 +49,7 @@ func (u Upload) UploadFile(c *gin.Context) {
 	if err != nil { //保存上传文件失败
 		global.Logger.WithFields(log.Fields{
 			"error": err.Error(),
-		}).Error("upload file failed!")
+		}).Error("Upload file failed")
 		errRsp := errcode.ErrorUploadFileFail.WithDetails(err.Error())
 		response.ToErrorResponse(errRsp)
 		return

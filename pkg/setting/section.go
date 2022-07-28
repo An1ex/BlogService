@@ -5,17 +5,20 @@ import (
 )
 
 type Config struct {
-	Server Server `toml:"Server"`
-	App    App    `toml:"App"`
-	BD     DB     `toml:"Database"`
-	JWT    JWT    `toml:"JWT"`
+	Server  Server             `toml:"Server"`
+	App     App                `toml:"App"`
+	BD      DB                 `toml:"Database"`
+	JWT     JWT                `toml:"JWT"`
+	Email   Email              `toml:"Email"`
+	Limiter map[string]Limiter `toml:"Limiter"`
 }
 
 type Server struct {
-	RunMode      string
-	HttpPort     string
-	ReadTimeout  time.Duration
-	WriteTimeout time.Duration
+	RunMode        string
+	HttpPort       string
+	ReadTimeout    time.Duration
+	WriteTimeout   time.Duration
+	ContextTimeout time.Duration
 }
 
 type App struct {
@@ -45,4 +48,21 @@ type JWT struct {
 	Secret string
 	Issuer string
 	Expire time.Duration
+}
+
+type Email struct {
+	Host     string
+	Port     int
+	IsSSL    bool
+	UserName string
+	Password string
+	From     string
+	To       []string
+}
+
+type Limiter struct {
+	Key          string
+	FillInterval time.Duration
+	Capacity     int64
+	Quantum      int64
 }

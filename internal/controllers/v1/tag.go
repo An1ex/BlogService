@@ -50,7 +50,7 @@ func (t Tag) List(c *gin.Context) {
 	if !valid { //入参校验或绑定参数失败
 		global.Logger.WithFields(log.Fields{
 			"error": verrs.Error(),
-		}).Error("BindAndValid failed!")
+		}).Error("BindAndValid failed")
 		errRsp := errcode.InvalidParams.WithDetails(verrs.Errors()...)
 		response.ToErrorResponse(errRsp)
 	} else { //参数校验或绑定参数成功
@@ -67,7 +67,7 @@ func (t Tag) List(c *gin.Context) {
 		if err != nil { //统计标签数量失败
 			global.Logger.WithFields(log.Fields{
 				"error": err.Error(),
-			}).Error("Count Tag failed!")
+			}).Error("Count Tag failed")
 			response.ToErrorResponse(errcode.ErrorCountTagFail)
 			return
 		}
@@ -76,7 +76,7 @@ func (t Tag) List(c *gin.Context) {
 		if err != nil { //获取标签列表失败
 			global.Logger.WithFields(log.Fields{
 				"error": err.Error(),
-			}).Error("Get Tag List failed!")
+			}).Error("Get Tag List failed")
 			response.ToErrorResponse(errcode.ErrorGetTagListFail)
 			return
 		}
@@ -102,7 +102,7 @@ func (t Tag) Create(c *gin.Context) {
 	if !valid { //入参校验或绑定参数失败
 		global.Logger.WithFields(log.Fields{
 			"error": verrs.Error(),
-		}).Error("BindAndValid failed!")
+		}).Error("BindAndValid failed")
 		errRsp := errcode.InvalidParams.WithDetails(verrs.Errors()...)
 		response.ToErrorResponse(errRsp)
 	} else { //参数校验或绑定参数成功
@@ -111,7 +111,7 @@ func (t Tag) Create(c *gin.Context) {
 		if err != nil { //创建标签失败
 			global.Logger.WithFields(log.Fields{
 				"error": err.Error(),
-			}).Error("Create Tag failed!")
+			}).Error("Create Tag failed")
 			response.ToErrorResponse(errcode.ErrorCreateTagFail)
 			return
 		}
@@ -141,7 +141,7 @@ func (t Tag) Update(c *gin.Context) {
 	if !valid { //入参校验或绑定参数失败
 		global.Logger.WithFields(log.Fields{
 			"error": verrs.Error(),
-		}).Error("BindAndValid failed!")
+		}).Error("BindAndValid failed")
 		errRsp := errcode.InvalidParams.WithDetails(verrs.Errors()...)
 		response.ToErrorResponse(errRsp)
 	} else { //参数校验或绑定参数成功
@@ -177,7 +177,7 @@ func (t Tag) Delete(c *gin.Context) {
 	if !valid { //入参校验或绑定参数失败
 		global.Logger.WithFields(log.Fields{
 			"error": verrs.Error(),
-		}).Error("BindAndValid failed!")
+		}).Error("BindAndValid failed")
 		errRsp := errcode.InvalidParams.WithDetails(verrs.Errors()...)
 		response.ToErrorResponse(errRsp)
 	} else { //参数校验或绑定参数成功
@@ -186,7 +186,7 @@ func (t Tag) Delete(c *gin.Context) {
 		if err != nil {
 			global.Logger.WithFields(log.Fields{
 				"error": err.Error(),
-			}).Error("Delete Tag failed!")
+			}).Error("Delete Tag failed")
 			response.ToErrorResponse(errcode.ErrorDeleteTagFail)
 			return
 		}

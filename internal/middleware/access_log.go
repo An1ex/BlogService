@@ -34,8 +34,10 @@ func AccessLog() gin.HandlerFunc {
 		c.Next()
 		endTime := time.Now().Unix()
 		global.Logger.WithFields(log.Fields{
-			"request":  c.Request.PostForm.Encode(),
+			"traceID":  c.MustGet("X-Trace-ID"),
+			"spanID":   c.MustGet("X-Span-ID"),
 			"method":   c.Request.Method,
+			"request":  c.Request.PostForm.Encode(),
 			"response": bodyWriter.body.String(),
 			"status":   bodyWriter.Status(),
 			"begin":    beginTime,

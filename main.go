@@ -1,34 +1,53 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"BlogService/global"
 	"BlogService/internal/model"
 	"BlogService/internal/routers"
 	"BlogService/pkg/logger"
+	"BlogService/pkg/setting"
+	"BlogService/pkg/tracer"
 
-	"github.com/BurntSushi/toml"
 	"github.com/gin-gonic/gin"
 )
 
+var (
+	port       string
+	runMode    string
+	configPath string
+)
+
 func init() {
-	err := loadConfig()
+	err := initFlag()
 	if err != nil {
-		log.Fatalf("[config] %v", err)
+		log.Fatalf("[flag] %v", err)
+	}
+
+	err = loadConfig()
+	if err != nil {
+		log.Fatalf("[configs] %v", err)
 	}
 
 	err = initLogger()
 	if err != nil {
-		log.Fatalf("[database] %v", err)
+		log.Fatalf("[logger] %v", err)
 	}
 
 	//前提：create database blog_service;
 	err = initDBEngine()
 	if err != nil {
 		log.Fatalf("[database] %v", err)
+	}
+
+	err = initTracer()
+	if err != nil {
+		log.Fatalf("[tracer] %v", err)
 	}
 }
 
@@ -54,9 +73,40 @@ func main() {
 }
 
 func loadConfig() error {
-	_, err := toml.DecodeFile("config/config.toml", &global.Config)
+	s, err := setting.NewSetting(strings.Split(configPath, ",")...)
 	if err != nil {
 		return err
+	}
+	err = s.ReadSection("Server", &global.Config.Server)
+	if err != nil {
+		return err
+	}
+	err = s.ReadSection("App", &global.Config.App)
+	if err != nil {
+		return err
+	}
+	err = s.ReadSection("DataBase", &global.Config.BD)
+	if err != nil {
+		return err
+	}
+	err = s.ReadSection("JWT", &global.Config.JWT)
+	if err != nil {
+		return err
+	}
+	err = s.ReadSection("Email", &global.Config.Email)
+	if err != nil {
+		return err
+	}
+	err = s.ReadSection("Limiter", &global.Config.Limiter)
+	if err != nil {
+		return err
+	}
+
+	if port != "" {
+		global.Config.Server.HttpPort = port
+	}
+	if runMode != "" {
+		global.Config.Server.RunMode = runMode
 	}
 	global.Config.Server.ReadTimeout *= time.Second
 	global.Config.Server.WriteTimeout *= time.Second
@@ -83,5 +133,22 @@ func initLogger() error {
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+func initTracer() error {
+	jaegerTracer, _, err := tracer.NewJaegerTracer("blog-service", "localhost:6831")
+	if err != nil {
+		return err
+	}
+	global.Tracer = jaegerTracer
+	return nil
+}
+
+func initFlag() error {
+	flag.StringVar(&port, "port", "", " 启动端口")
+	flag.StringVar(&runMode, "mode", "", " 启动模式")
+	flag.StringVar(&configPath, "path", "configs/", "指定要使用的配置文件路径")
+	flag.Parse()
 	return nil
 }

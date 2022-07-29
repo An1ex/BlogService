@@ -3,6 +3,6 @@
 # 技术栈
 前端：
 
-后端：gin + gorm + mysql8.0 + es + logrus
+后端：gin + JWT + Jaeger + gorm + mysql8.0 + es 
 
-接口：swaggo
+文档：swaggo

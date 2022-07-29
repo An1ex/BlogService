@@ -31,6 +31,7 @@ func NewRouter() *gin.Engine {
 	methodLimiter := limiter.NewMethodLimiter().AddBuckets(buckets...)
 	r.Use(middleware.Limiter(methodLimiter))
 
+	r.Use(middleware.Tracing())
 	r.Use(middleware.ContextTimeout())
 	r.Use(middleware.Translation())
 

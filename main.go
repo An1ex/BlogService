@@ -1,51 +1,60 @@
 package main
 
 import (
-	"flag"
+	"context"
+	"fmt"
 	"log"
 	"net/http"
-	"strings"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"BlogService/global"
 	"BlogService/internal/model"
 	"BlogService/internal/routers"
+	"BlogService/pkg/flag"
 	"BlogService/pkg/logger"
 	"BlogService/pkg/setting"
 	"BlogService/pkg/tracer"
-
 	"github.com/gin-gonic/gin"
 )
 
 var (
-	port       string
-	runMode    string
-	configPath string
+	port          string
+	runMode       string
+	configPath    string
+	isVersion     bool
+	buildTime     string
+	buildVersion  string
+	commitID      string
+	serviceName   string //jaeger setting
+	agentHostPort string //jaeger setting
 )
 
 func init() {
-	err := initFlag()
+	err := flag.InitFlag(&port, &runMode, &configPath, &isVersion, &serviceName, &agentHostPort)
 	if err != nil {
 		log.Fatalf("[flag] %v", err)
 	}
 
-	err = loadConfig()
+	err = setting.InitSetting(port, runMode, configPath)
 	if err != nil {
 		log.Fatalf("[configs] %v", err)
 	}
 
-	err = initLogger()
+	err = logger.InitLogger()
 	if err != nil {
 		log.Fatalf("[logger] %v", err)
 	}
 
 	//前提：create database blog_service;
-	err = initDBEngine()
+	err = model.InitDBEngine()
 	if err != nil {
 		log.Fatalf("[database] %v", err)
 	}
 
-	err = initTracer()
+	err = tracer.InitTracer(serviceName, agentHostPort)
 	if err != nil {
 		log.Fatalf("[tracer] %v", err)
 	}
@@ -59,6 +68,11 @@ func init() {
 // @license.url https://www.apache.org/licenses/LICENSE-2.0.html
 // @host localhost:8080
 func main() {
+	if isVersion {
+		fmt.Printf("build_time: %s\n", buildTime)       // "-X main.buildTime=`date +%Y-%m-%d,%H:%M:%S`"
+		fmt.Printf("build_version: %s\n", buildVersion) // "-X main.buildVersion=1.0.0"
+		fmt.Printf("commit_id: %s\n", commitID)         // "-X main.commitID=`git rev-parse HEAD`"
+	}
 	gin.SetMode(global.Config.Server.RunMode)
 	r := routers.NewRouter()
 
@@ -69,86 +83,22 @@ func main() {
 		WriteTimeout: global.Config.Server.WriteTimeout,
 	}
 
-	s.ListenAndServe()
-}
+	go func() {
+		err := s.ListenAndServe()
+		if err != nil && err != http.ErrServerClosed {
+			global.Logger.Fatalf("[server] %v", err)
+		}
+	}()
+	quit := make(chan os.Signal)
+	//将进程收到的结束程序signal转发给channel
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+	global.Logger.Println("[server] shutting down server...")
 
-func loadConfig() error {
-	s, err := setting.NewSetting(strings.Split(configPath, ",")...)
-	if err != nil {
-		return err
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err := s.Shutdown(ctx); err != nil {
+		global.Logger.Fatalf("[server] forced to shutting down: %v", err)
 	}
-	err = s.ReadSection("Server", &global.Config.Server)
-	if err != nil {
-		return err
-	}
-	err = s.ReadSection("App", &global.Config.App)
-	if err != nil {
-		return err
-	}
-	err = s.ReadSection("DataBase", &global.Config.BD)
-	if err != nil {
-		return err
-	}
-	err = s.ReadSection("JWT", &global.Config.JWT)
-	if err != nil {
-		return err
-	}
-	err = s.ReadSection("Email", &global.Config.Email)
-	if err != nil {
-		return err
-	}
-	err = s.ReadSection("Limiter", &global.Config.Limiter)
-	if err != nil {
-		return err
-	}
-
-	if port != "" {
-		global.Config.Server.HttpPort = port
-	}
-	if runMode != "" {
-		global.Config.Server.RunMode = runMode
-	}
-	global.Config.Server.ReadTimeout *= time.Second
-	global.Config.Server.WriteTimeout *= time.Second
-	global.Config.JWT.Expire *= time.Second
-	return nil
-}
-
-func initDBEngine() error {
-	var err error
-	global.DBEngine, err = model.NewDBEngine(global.Config.BD)
-	if err != nil {
-		return err
-	}
-	err = model.MigrateDB()
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func initLogger() error {
-	var err error
-	global.Logger, err = logger.NewLogger()
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func initTracer() error {
-	jaegerTracer, _, err := tracer.NewJaegerTracer("blog-service", "localhost:6831")
-	if err != nil {
-		return err
-	}
-	global.Tracer = jaegerTracer
-	return nil
-}
-
-func initFlag() error {
-	flag.StringVar(&port, "port", "", " 启动端口")
-	flag.StringVar(&runMode, "mode", "", " 启动模式")
-	flag.StringVar(&configPath, "path", "configs/", "指定要使用的配置文件路径")
-	flag.Parse()
-	return nil
+	global.Logger.Println("[server] server exiting")
 }

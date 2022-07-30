@@ -38,7 +38,7 @@ UserName = "xxxx@qq.com"
 Password = "xxxxxxxxx"
 IsSSL = true
 From = "xxxx@qq.com"
-To = ["xxxx@qq.com", "xxxx@qq.com", xxxx@qq.com]
+To = ["xxxx@qq.com", "xxxx@qq.com", "xxxx@qq.com"]
 
 [Limiter]
 [Limiter.auth]

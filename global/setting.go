@@ -1,9 +1,9 @@
 package global
 
 import (
-	"BlogService/pkg/setting"
+	"BlogService/configs"
 )
 
 var (
-	Config setting.Config
+	Config configs.Config
 )

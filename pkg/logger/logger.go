@@ -20,3 +20,12 @@ func NewLogger() (*log.Logger, error) {
 	l.ReportCaller = true
 	return l, err
 }
+
+func InitLogger() error {
+	var err error
+	global.Logger, err = NewLogger()
+	if err != nil {
+		return err
+	}
+	return nil
+}

@@ -4,6 +4,7 @@ import (
 	"io"
 	"time"
 
+	"BlogService/global"
 	"github.com/opentracing/opentracing-go"
 	"github.com/uber/jaeger-client-go/config"
 )
@@ -27,4 +28,13 @@ func NewJaegerTracer(serviceName, agentHostPort string) (opentracing.Tracer, io.
 	}
 	opentracing.SetGlobalTracer(tracer)
 	return tracer, closer, nil
+}
+
+func InitTracer(serviceName, agentHostPort string) error {
+	jaegerTracer, _, err := NewJaegerTracer(serviceName, agentHostPort)
+	if err != nil {
+		return err
+	}
+	global.Tracer = jaegerTracer
+	return nil
 }

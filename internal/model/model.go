@@ -3,9 +3,8 @@ package model
 import (
 	"fmt"
 
+	"BlogService/configs"
 	"BlogService/global"
-	"BlogService/pkg/setting"
-
 	"github.com/pkg/errors"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -18,7 +17,7 @@ type Model struct {
 }
 
 // NewDBEngine 连接数据库软件并创建一个数据库引擎
-func NewDBEngine(database setting.DB) (*gorm.DB, error) {
+func NewDBEngine(database configs.DB) (*gorm.DB, error) {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=%s&parseTime=%t&loc=Local",
 		database.Username,
 		database.Password,
@@ -45,6 +44,19 @@ func NewDBEngine(database setting.DB) (*gorm.DB, error) {
 func MigrateDB() error {
 	err := global.DBEngine.AutoMigrate(&Tag{}, &Article{}, &ArticleTag{}, &Auth{})
 	return errors.Wrap(err, "database: failed to migration schema")
+}
+
+func InitDBEngine() error {
+	var err error
+	global.DBEngine, err = NewDBEngine(global.Config.BD)
+	if err != nil {
+		return err
+	}
+	err = MigrateDB()
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 //const (

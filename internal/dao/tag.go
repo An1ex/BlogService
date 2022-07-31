@@ -7,6 +7,17 @@ import (
 	"gorm.io/gorm"
 )
 
+func (d *Dao) GetTag(id uint, name string, state uint8) (*model.Tag, error) {
+	tag := model.Tag{
+		Model: model.Model{
+			Model: gorm.Model{ID: id},
+		},
+		Name:  name,
+		State: state,
+	}
+	return tag.Get(d.engine)
+}
+
 func (d *Dao) CountTag(name string, state uint8) (int64, error) {
 	tag := model.Tag{Name: name, State: state}
 	return tag.Count(d.engine)

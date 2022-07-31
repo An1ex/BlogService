@@ -29,7 +29,32 @@ func NewTag() Tag {
 // @Failure 500 {object} errcode.Error "内部错误"
 // @Router /api/v1/tags/{id} [get]
 func (t Tag) Get(c *gin.Context) {
-
+	id, _ := strconv.Atoi(c.Param("id"))
+	param := service.GetTagRequest{
+		ID: uint(id),
+	}
+	response := app.NewResponse(c)
+	valid, verrs := app.BindAndValid(c, &param)
+	if !valid { //入参校验或绑定参数失败
+		global.Logger.WithFields(log.Fields{
+			"error": verrs.Error(),
+		}).Error("BindAndValid failed")
+		errRsp := errcode.InvalidParams.WithDetails(verrs.Errors()...)
+		response.ToErrorResponse(errRsp)
+	} else { //参数校验和绑定参数成功
+		svc := service.New(c.Request.Context())
+		tag, err := svc.GetTag(&param)
+		if err != nil { //获取标签失败
+			global.Logger.WithFields(log.Fields{
+				"error": err.Error(),
+			}).Error("Get Tag failed")
+			errRsp := errcode.ErrorGetTagFail.WithDetails(err.Error())
+			response.ToErrorResponse(errRsp)
+			return
+		}
+		//获取标签列表成功
+		response.ToResponse(tag)
+	}
 }
 
 // @Summary 获取多个标签
@@ -53,12 +78,8 @@ func (t Tag) List(c *gin.Context) {
 		}).Error("BindAndValid failed")
 		errRsp := errcode.InvalidParams.WithDetails(verrs.Errors()...)
 		response.ToErrorResponse(errRsp)
-	} else { //参数校验或绑定参数成功
+	} else { //参数校验和绑定参数成功
 		svc := service.New(c.Request.Context())
-		pager := app.Pager{
-			Page:     app.GetPage(c),
-			PageSize: app.GetPageSize(c),
-		}
 
 		totalRows, err := svc.CountTag(&service.CountTagRequest{
 			Name:  param.Name,
@@ -72,12 +93,17 @@ func (t Tag) List(c *gin.Context) {
 			return
 		}
 
+		pager := app.Pager{
+			Page:     app.GetPage(c),
+			PageSize: app.GetPageSize(c),
+		}
 		tags, err := svc.GetTagList(&param, &pager)
 		if err != nil { //获取标签列表失败
 			global.Logger.WithFields(log.Fields{
 				"error": err.Error(),
 			}).Error("Get Tag List failed")
-			response.ToErrorResponse(errcode.ErrorGetTagListFail)
+			errRsp := errcode.ErrorGetTagListFail.WithDetails(err.Error())
+			response.ToErrorResponse(errRsp)
 			return
 		}
 		//获取标签列表成功
@@ -105,14 +131,15 @@ func (t Tag) Create(c *gin.Context) {
 		}).Error("BindAndValid failed")
 		errRsp := errcode.InvalidParams.WithDetails(verrs.Errors()...)
 		response.ToErrorResponse(errRsp)
-	} else { //参数校验或绑定参数成功
+	} else { //参数校验和绑定参数成功
 		svc := service.New(c.Request.Context())
 		err := svc.CreateTag(&param)
 		if err != nil { //创建标签失败
 			global.Logger.WithFields(log.Fields{
 				"error": err.Error(),
 			}).Error("Create Tag failed")
-			response.ToErrorResponse(errcode.ErrorCreateTagFail)
+			errRsp := errcode.ErrorCreateTagFail.WithDetails(err.Error())
+			response.ToErrorResponse(errRsp)
 			return
 		}
 		//新增标签成功
@@ -144,14 +171,15 @@ func (t Tag) Update(c *gin.Context) {
 		}).Error("BindAndValid failed")
 		errRsp := errcode.InvalidParams.WithDetails(verrs.Errors()...)
 		response.ToErrorResponse(errRsp)
-	} else { //参数校验或绑定参数成功
+	} else { //参数校验和绑定参数成功
 		svc := service.New(c.Request.Context())
 		err := svc.UpdateTag(&param)
 		if err != nil { //更新标签失败
 			global.Logger.WithFields(log.Fields{
 				"error": err.Error(),
 			}).Error("Update Tag failed")
-			response.ToErrorResponse(errcode.ErrorUpdateTagFail)
+			errRsp := errcode.ErrorUpdateTagFail.WithDetails(err.Error())
+			response.ToErrorResponse(errRsp)
 			return
 		}
 		//更新标签成功
@@ -180,14 +208,15 @@ func (t Tag) Delete(c *gin.Context) {
 		}).Error("BindAndValid failed")
 		errRsp := errcode.InvalidParams.WithDetails(verrs.Errors()...)
 		response.ToErrorResponse(errRsp)
-	} else { //参数校验或绑定参数成功
+	} else { //参数校验和绑定参数成功
 		svc := service.New(c.Request.Context())
 		err := svc.DeleteTag(&param)
 		if err != nil {
 			global.Logger.WithFields(log.Fields{
 				"error": err.Error(),
 			}).Error("Delete Tag failed")
-			response.ToErrorResponse(errcode.ErrorDeleteTagFail)
+			errRsp := errcode.ErrorDeleteTagFail.WithDetails(err.Error())
+			response.ToErrorResponse(errRsp)
 			return
 		}
 		//删除标签成功

@@ -2,7 +2,6 @@ package model
 
 import (
 	"BlogService/pkg/app"
-
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
 )
@@ -20,6 +19,17 @@ type SwaggerTag struct {
 
 func (t Tag) TableName() string {
 	return "blog_tag"
+}
+
+func (t Tag) Get(db *gorm.DB) (*Tag, error) {
+	var tag *Tag
+	if t.Name != "" {
+		db = db.Where("name = ?", t.Name)
+	}
+	if err := db.Model(t).Where("id = ? AND state = ?", t.Model.ID, t.State).First(&tag).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, errors.Wrap(err, "database: tag does not exist")
+	}
+	return tag, nil
 }
 
 func (t Tag) Count(db *gorm.DB) (int64, error) {
@@ -49,6 +59,10 @@ func (t Tag) List(db *gorm.DB, pageOffset, pageSize int) ([]*Tag, error) {
 }
 
 func (t Tag) Create(db *gorm.DB) error {
+	var tag Tag
+	if err := db.Where("name = ?", t.Name).First(&tag).Error; err == nil {
+		return errors.New("database: tag already exists")
+	}
 	if err := db.Create(&t).Error; err != nil {
 		return errors.Wrap(err, "database: failed to create tag")
 	}
@@ -56,7 +70,10 @@ func (t Tag) Create(db *gorm.DB) error {
 }
 
 func (t Tag) Update(db *gorm.DB, values map[string]interface{}) error {
-	db = db.Model(t).Where("id = ?", t.Model.ID)
+	db = db.Model(t).Where("id = ?", t.Model.ID).Take(&t)
+	if errors.Is(db.Error, gorm.ErrRecordNotFound) {
+		return errors.Wrap(db.Error, "database: tag does not exist")
+	}
 	if err := db.Updates(values).Error; err != nil {
 		return errors.Wrap(err, "database: failed to update tag")
 	}
@@ -64,7 +81,11 @@ func (t Tag) Update(db *gorm.DB, values map[string]interface{}) error {
 }
 
 func (t Tag) Delete(db *gorm.DB) error {
-	if err := db.Where("id = ?", t.Model.ID).Delete(&t).Error; err != nil {
+	db = db.Model(t).Where("id = ?", t.Model.ID).Take(&t)
+	if errors.Is(db.Error, gorm.ErrRecordNotFound) {
+		return errors.Wrap(db.Error, "database: tag does not exist")
+	}
+	if err := db.Delete(&t).Error; err != nil {
 		return errors.Wrap(err, "database: failed to delete tag")
 	}
 	return nil

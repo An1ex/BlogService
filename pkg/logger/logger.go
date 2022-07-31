@@ -14,10 +14,22 @@ func NewLogger() (*log.Logger, error) {
 	if err != nil {
 		return nil, err
 	}
-	l.Out = logFile
-	l.Formatter = &log.JSONFormatter{}
-	l.Level = log.DebugLevel
-	l.ReportCaller = true
+
+	switch global.Config.Server.RunMode {
+	case "debug":
+		l.Level = log.DebugLevel
+		l.Out = os.Stdout
+		l.Formatter = &log.TextFormatter{ForceColors: true}
+	case "release":
+		l.Level = log.ErrorLevel
+		l.Out = logFile
+		l.Formatter = &log.JSONFormatter{}
+	case "test":
+		l.Level = log.WarnLevel
+		l.Out = logFile
+		l.Formatter = &log.JSONFormatter{}
+	default:
+	}
 	return l, err
 }
 

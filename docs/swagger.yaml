@@ -159,7 +159,7 @@ paths:
           type: string
       - description: 文章简介
         in: body
-        minLength: 2
+        maxLength: 255
         name: desc
         schema:
           type: string
@@ -172,7 +172,7 @@ paths:
           type: string
       - description: 文章封面
         in: body
-        maxLength: 100
+        maxLength: 255
         minLength: 2
         name: cover_image_url
         schema:
@@ -280,26 +280,23 @@ paths:
       - description: 文章标题
         in: body
         maxLength: 100
-        minLength: 2
         name: title
         schema:
           type: string
       - description: 文章简介
         in: body
-        minLength: 2
+        maxLength: 255
         name: desc
         schema:
           type: string
       - description: 文章内容
         in: body
-        minLength: 2
         name: content
         schema:
           type: string
       - description: 文章封面
         in: body
-        maxLength: 100
-        minLength: 2
+        maxLength: 255
         name: cover_image_url
         schema:
           type: string
@@ -309,6 +306,7 @@ paths:
         - 1
         in: body
         name: state
+        required: true
         schema:
           type: integer
       - description: 修改者
@@ -490,7 +488,6 @@ paths:
       - description: 标签名称
         in: body
         maxLength: 100
-        minLength: 2
         name: name
         schema:
           type: string
@@ -500,6 +497,7 @@ paths:
         - 1
         in: body
         name: state
+        required: true
         schema:
           type: integer
       - description: 修改者

@@ -150,8 +150,8 @@ func (t Tag) Create(c *gin.Context) {
 // @Summary 更新标签
 // @Produce  json
 // @Param id path uint true "标签 ID"
-// @Param name body string false "标签名称" minlength(2) maxlength(100)
-// @Param state body uint false "状态" Enums(0, 1)
+// @Param name body string false "标签名称" maxlength(100)
+// @Param state body uint true "状态" Enums(0, 1)
 // @Param update_by body string true "修改者" minlength(2) maxlength(100)
 // @Success 200 {array} model.Tag "成功"
 // @Failure 400 {object} errcode.Error "请求错误"

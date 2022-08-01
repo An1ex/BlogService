@@ -1,6 +1,10 @@
 package model
 
-import "BlogService/pkg/app"
+import (
+	"BlogService/pkg/app"
+	"github.com/pkg/errors"
+	"gorm.io/gorm"
+)
 
 type Article struct {
 	Model
@@ -18,4 +22,74 @@ type SwaggerArticle struct {
 
 func (a Article) TableName() string {
 	return "blog_article"
+}
+
+func (a Article) Get(db *gorm.DB) (*Article, error) {
+	var article *Article
+	if a.Title != "" {
+		db = db.Where("title = ?", a.Title)
+	}
+	if err := db.Model(&a).Where("id = ? AND state = ?", a.Model.ID, a.State).First(&article).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, errors.Wrap(err, "database: article does not exist")
+	}
+	return article, nil
+}
+
+func (a Article) Count(db *gorm.DB) (int64, error) {
+	var count int64
+	if a.Title != "" {
+		db = db.Where("name = ?", a.Title)
+	}
+	err := db.Model(&a).Where("state = ?", a.State).Count(&count).Error
+	if err != nil {
+		return 0, errors.Wrap(err, "database: failed to count articles")
+	}
+	return count, nil
+}
+
+func (a Article) List(db *gorm.DB, pageOffset, pageSize int) ([]*Article, error) {
+	var articles []*Article
+	if pageOffset >= 0 && pageSize > 0 {
+		db = db.Offset(pageOffset).Limit(pageSize)
+	}
+	if a.Title != "" {
+		db = db.Where("name = ?", a.Title)
+	}
+	if err := db.Where("state = ?", a.State).Find(&articles).Error; err != nil {
+		return nil, errors.Wrap(err, "database: failed to get article list")
+	}
+	return articles, nil
+}
+
+func (a Article) Create(db *gorm.DB) error {
+	var article Article
+	if err := db.Where("name = ?", a.Title).First(&article).Error; err == nil {
+		return errors.New("database: article already exists")
+	}
+	if err := db.Create(&a).Error; err != nil {
+		return errors.Wrap(err, "database: failed to create article")
+	}
+	return nil
+}
+
+func (a Article) Update(db *gorm.DB, values map[string]interface{}) error {
+	db = db.Model(&a).Where("id = ?", a.Model.ID).Take(&a)
+	if errors.Is(db.Error, gorm.ErrRecordNotFound) {
+		return errors.Wrap(db.Error, "database: article does not exist")
+	}
+	if err := db.Updates(values).Error; err != nil {
+		return errors.Wrap(err, "database: failed to update article")
+	}
+	return nil
+}
+
+func (a Article) Delete(db *gorm.DB) error {
+	db = db.Model(&a).Where("id = ?", a.Model.ID).Take(&a)
+	if errors.Is(db.Error, gorm.ErrRecordNotFound) {
+		return errors.Wrap(db.Error, "database: article does not exist")
+	}
+	if err := db.Delete(&a).Error; err != nil {
+		return errors.Wrap(err, "database: failed to delete article")
+	}
+	return nil
 }

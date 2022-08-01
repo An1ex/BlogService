@@ -98,7 +98,7 @@ const docTemplate = `{
                         }
                     },
                     {
-                        "minLength": 2,
+                        "maxLength": 255,
                         "description": "文章简介",
                         "name": "desc",
                         "in": "body",
@@ -117,7 +117,7 @@ const docTemplate = `{
                         }
                     },
                     {
-                        "maxLength": 100,
+                        "maxLength": 255,
                         "minLength": 2,
                         "description": "文章封面",
                         "name": "cover_image_url",
@@ -242,7 +242,6 @@ const docTemplate = `{
                     },
                     {
                         "maxLength": 100,
-                        "minLength": 2,
                         "description": "文章标题",
                         "name": "title",
                         "in": "body",
@@ -251,7 +250,7 @@ const docTemplate = `{
                         }
                     },
                     {
-                        "minLength": 2,
+                        "maxLength": 255,
                         "description": "文章简介",
                         "name": "desc",
                         "in": "body",
@@ -260,7 +259,6 @@ const docTemplate = `{
                         }
                     },
                     {
-                        "minLength": 2,
                         "description": "文章内容",
                         "name": "content",
                         "in": "body",
@@ -269,8 +267,7 @@ const docTemplate = `{
                         }
                     },
                     {
-                        "maxLength": 100,
-                        "minLength": 2,
+                        "maxLength": 255,
                         "description": "文章封面",
                         "name": "cover_image_url",
                         "in": "body",
@@ -286,6 +283,7 @@ const docTemplate = `{
                         "description": "状态",
                         "name": "state",
                         "in": "body",
+                        "required": true,
                         "schema": {
                             "type": "integer"
                         }
@@ -554,7 +552,6 @@ const docTemplate = `{
                     },
                     {
                         "maxLength": 100,
-                        "minLength": 2,
                         "description": "标签名称",
                         "name": "name",
                         "in": "body",
@@ -570,6 +567,7 @@ const docTemplate = `{
                         "description": "状态",
                         "name": "state",
                         "in": "body",
+                        "required": true,
                         "schema": {
                             "type": "integer"
                         }

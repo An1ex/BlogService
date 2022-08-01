@@ -26,7 +26,7 @@ func (t Tag) Get(db *gorm.DB) (*Tag, error) {
 	if t.Name != "" {
 		db = db.Where("name = ?", t.Name)
 	}
-	if err := db.Model(t).Where("id = ? AND state = ?", t.Model.ID, t.State).First(&tag).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+	if err := db.Model(&t).Where("id = ? AND state = ?", t.Model.ID, t.State).First(&tag).Error; errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, errors.Wrap(err, "database: tag does not exist")
 	}
 	return tag, nil
@@ -70,7 +70,7 @@ func (t Tag) Create(db *gorm.DB) error {
 }
 
 func (t Tag) Update(db *gorm.DB, values map[string]interface{}) error {
-	db = db.Model(t).Where("id = ?", t.Model.ID).Take(&t)
+	db = db.Model(&t).Where("id = ?", t.Model.ID).Take(&t)
 	if errors.Is(db.Error, gorm.ErrRecordNotFound) {
 		return errors.Wrap(db.Error, "database: tag does not exist")
 	}
@@ -81,7 +81,7 @@ func (t Tag) Update(db *gorm.DB, values map[string]interface{}) error {
 }
 
 func (t Tag) Delete(db *gorm.DB) error {
-	db = db.Model(t).Where("id = ?", t.Model.ID).Take(&t)
+	db = db.Model(&t).Where("id = ?", t.Model.ID).Take(&t)
 	if errors.Is(db.Error, gorm.ErrRecordNotFound) {
 		return errors.Wrap(db.Error, "database: tag does not exist")
 	}

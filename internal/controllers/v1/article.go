@@ -229,3 +229,65 @@ func (t Article) Delete(c *gin.Context) {
 		response.ToResponse(gin.H{})
 	}
 }
+
+func (t Article) AppendTag(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	param := service.AppendArticleTagRequest{
+		ID: uint(id),
+	}
+	response := app.NewResponse(c)
+	valid, verrs := app.BindAndValid(c, &param)
+
+	if !valid { //入参校验或绑定参数失败
+		global.Logger.WithFields(log.Fields{
+			"error": verrs.Error(),
+		}).Error("BindAndValid failed")
+		errRsp := errcode.InvalidParams.WithDetails(verrs.Errors()...)
+		response.ToErrorResponse(errRsp)
+	} else { //参数校验和绑定参数成功
+		svc := service.New(c.Request.Context())
+		err := svc.AppendArticleTag(&param)
+		if err != nil {
+			global.Logger.WithFields(log.Fields{
+				"error": err.Error(),
+			}).Error("Append Tag to the article failed")
+			errRsp := errcode.ErrorCreateTagFail.WithDetails(err.Error())
+			response.ToErrorResponse(errRsp)
+			return
+		}
+
+		//新增文章标签成功
+		response.ToResponse(gin.H{})
+	}
+}
+
+func (t Article) RemoveTag(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	param := service.DeleteArticleTagRequest{
+		ID: uint(id),
+	}
+	response := app.NewResponse(c)
+	valid, verrs := app.BindAndValid(c, &param)
+
+	if !valid { //入参校验或绑定参数失败
+		global.Logger.WithFields(log.Fields{
+			"error": verrs.Error(),
+		}).Error("BindAndValid failed")
+		errRsp := errcode.InvalidParams.WithDetails(verrs.Errors()...)
+		response.ToErrorResponse(errRsp)
+	} else { //参数校验和绑定参数成功
+		svc := service.New(c.Request.Context())
+		err := svc.RemoveArticleTag(&param)
+		if err != nil {
+			global.Logger.WithFields(log.Fields{
+				"error": err.Error(),
+			}).Error("Append Tag to the article failed")
+			errRsp := errcode.ErrorDeleteTagFail.WithDetails(err.Error())
+			response.ToErrorResponse(errRsp)
+			return
+		}
+	}
+
+	//删除文章标签成功
+	response.ToResponse(gin.H{})
+}

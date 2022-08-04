@@ -42,7 +42,7 @@ func NewDBEngine(database configs.DB) (*gorm.DB, error) {
 
 // MigrateDB 迁移数据表
 func MigrateDB() error {
-	err := global.DBEngine.AutoMigrate(&Tag{}, &Article{}, &ArticleTag{}, &Auth{})
+	err := global.DBEngine.AutoMigrate(&Tag{}, &Article{}, &Auth{})
 	return errors.Wrap(err, "database: failed to migration schema")
 }
 

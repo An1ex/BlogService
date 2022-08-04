@@ -4,12 +4,14 @@ import (
 	"BlogService/pkg/app"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type Tag struct {
 	Model
-	Name  string `json:"name" gorm:"type:varchar(100); default:''; comment:'标签名称'"`
-	State uint8  `json:"state" gorm:"type:tinyint(3) unsigned; default:1; comment:'标签状态,0为禁用,1为启用'"`
+	Name     string    `json:"name" gorm:"type:varchar(100); default:''; comment:'标签名称'"`
+	State    uint8     `json:"state" gorm:"type:tinyint(3) unsigned; default:1; comment:'标签状态,0为禁用,1为启用'"`
+	Articles []Article `json:"articles" gorm:"many2many:blog_article_tags; comment:'文章标签关联表'"`
 }
 
 type SwaggerTag struct {
@@ -26,7 +28,7 @@ func (t Tag) Get(db *gorm.DB) (*Tag, error) {
 	if t.Name != "" {
 		db = db.Where("name = ?", t.Name)
 	}
-	if err := db.Model(&t).Where("id = ? AND state = ?", t.Model.ID, t.State).First(&tag).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+	if err := db.Model(&t).Where("id = ? AND state = ?", t.Model.ID, t.State).Preload("Articles").First(&tag).Error; errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, errors.Wrap(err, "database: tag does not exist")
 	}
 	return tag, nil
@@ -85,7 +87,7 @@ func (t Tag) Delete(db *gorm.DB) error {
 	if errors.Is(db.Error, gorm.ErrRecordNotFound) {
 		return errors.Wrap(db.Error, "database: tag does not exist")
 	}
-	if err := db.Delete(&t).Error; err != nil {
+	if err := db.Select(clause.Associations).Delete(&t).Error; err != nil {
 		return errors.Wrap(err, "database: failed to delete tag")
 	}
 	return nil

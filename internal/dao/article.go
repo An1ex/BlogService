@@ -31,7 +31,11 @@ func (d *Dao) GetArticleList(title string, state uint8, page, pageSize int) ([]*
 	return article.List(d.engine, pageOffset, pageSize)
 }
 
-func (d *Dao) CreateArticle(title, desc, content, coverImageUrl string, state uint8, createdBy string) error {
+func (d *Dao) CreateArticle(title, desc, content, coverImageUrl string, state uint8, createdBy string, tagNames []string) error {
+	var tags []model.Tag
+	for _, tagName := range tagNames {
+		tags = append(tags, model.Tag{Name: tagName, State: state, Model: model.Model{CreateBy: createdBy}})
+	}
 	article := model.Article{
 		Title:         title,
 		Desc:          desc,
@@ -41,6 +45,7 @@ func (d *Dao) CreateArticle(title, desc, content, coverImageUrl string, state ui
 		Model: model.Model{
 			CreateBy: createdBy,
 		},
+		Tags: tags,
 	}
 	return article.Create(d.engine)
 }
@@ -72,7 +77,7 @@ func (d *Dao) UpdateArticle(id uint, title, desc, content, coverImageUrl string,
 	return article.Update(d.engine, realValues)
 }
 
-func (d Dao) DeleteArticle(id uint) error {
+func (d *Dao) DeleteArticle(id uint) error {
 	article := model.Article{
 		Model: model.Model{
 			Model: gorm.Model{ID: id},

@@ -26,12 +26,13 @@ type ArticleListRequest struct {
 }
 
 type CreateArticleRequest struct {
-	Title         string `form:"title" binding:"required,min=3,max=100"`
-	Desc          string `form:"desc" binding:"max=255"`
-	Content       string `form:"content" binding:"required,min=2"`
-	CoverImageURL string `form:"cover_image_url" binding:"min=2,max=255"`
-	CreateBy      string `form:"create_by" binding:"required,min=2,max=100"`
-	State         uint8  `form:"state,default=1" binding:"oneof=0 1"`
+	Title         string   `form:"title" binding:"required,min=3,max=100"`
+	Desc          string   `form:"desc" binding:"max=255"`
+	Content       string   `form:"content" binding:"required,min=2"`
+	CoverImageURL string   `form:"cover_image_url" binding:"min=2,max=255"`
+	CreateBy      string   `form:"create_by" binding:"required,min=2,max=100"`
+	State         uint8    `form:"state,default=1" binding:"oneof=0 1"`
+	TagName       []string `form:"tag_name"`
 }
 
 type UpdateArticleRequest struct {
@@ -48,6 +49,18 @@ type DeleteArticleRequest struct {
 	ID uint `form:"id" binding:"required,gte=1"`
 }
 
+type AppendArticleTagRequest struct {
+	ID       uint     `form:"id" binding:"required,gte=1"`
+	TagName  []string `form:"tag_name"`
+	CreateBy string   `form:"create_by" binding:"required,min=2,max=100"`
+	State    uint8    `form:"state,default=1" binding:"oneof=0 1"`
+}
+
+type DeleteArticleTagRequest struct {
+	ID      uint     `form:"id" binding:"required,gte=1"`
+	TagName []string `form:"tag_name"`
+}
+
 func (svc *Service) GetArticle(param *GetArticleRequest) (*model.Article, error) {
 	return svc.dao.GetArticle(param.ID, param.Title, param.State)
 }
@@ -61,7 +74,7 @@ func (svc *Service) GetArticleList(param *ArticleListRequest, pager *app.Pager) 
 }
 
 func (svc *Service) CreateArticle(param *CreateArticleRequest) error {
-	return svc.dao.CreateArticle(param.Title, param.Desc, param.Content, param.CoverImageURL, param.State, param.CreateBy)
+	return svc.dao.CreateArticle(param.Title, param.Desc, param.Content, param.CoverImageURL, param.State, param.CreateBy, param.TagName)
 }
 
 func (svc *Service) UpdateArticle(param *UpdateArticleRequest) error {
@@ -71,4 +84,12 @@ func (svc *Service) UpdateArticle(param *UpdateArticleRequest) error {
 
 func (svc *Service) DeleteArticle(param *DeleteArticleRequest) error {
 	return svc.dao.DeleteArticle(param.ID)
+}
+
+func (svc *Service) AppendArticleTag(param *AppendArticleTagRequest) error {
+	return svc.dao.AppendTag(param.ID, param.TagName, param.CreateBy, param.State)
+}
+
+func (svc *Service) RemoveArticleTag(param *DeleteArticleTagRequest) error {
+	return svc.dao.RemoveTag(param.ID, param.TagName)
 }

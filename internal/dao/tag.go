@@ -57,7 +57,7 @@ func (d *Dao) UpdateTag(id uint, name string, state uint8, updateBy string) erro
 	return tag.Update(d.engine, values)
 }
 
-func (d Dao) DeleteTag(id uint) error {
+func (d *Dao) DeleteTag(id uint) error {
 	tag := model.Tag{
 		Model: model.Model{
 			Model: gorm.Model{ID: id},

@@ -64,6 +64,9 @@ func NewRouter() *gin.Engine {
 		apiV1.GET("/articles/:id", a.Get)
 		apiV1.GET("/articles", a.List)
 
+		apiV1.POST("/articles_tag/:id", a.AppendTag)
+		apiV1.DELETE("/articles_tag/:id", a.RemoveTag)
+
 		apiV1.POST("/upload/file", f.UploadFile)
 	}
 	return r

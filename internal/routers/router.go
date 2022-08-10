@@ -2,7 +2,6 @@ package routers
 
 import (
 	"net/http"
-	"time"
 
 	_ "BlogService/docs"
 	"BlogService/global"
@@ -15,8 +14,6 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-var buckets []limiter.BucketRule
-
 func NewRouter() *gin.Engine {
 	r := gin.New()
 	if global.Config.Server.RunMode == "debug" {
@@ -27,8 +24,7 @@ func NewRouter() *gin.Engine {
 		r.Use(middleware.Recovery())
 	}
 
-	initBuckets()
-	methodLimiter := limiter.NewMethodLimiter().AddBuckets(buckets...)
+	methodLimiter := limiter.NewMethodLimiter()
 	r.Use(middleware.Limiter(methodLimiter))
 
 	r.Use(middleware.Tracing())
@@ -70,16 +66,4 @@ func NewRouter() *gin.Engine {
 		apiV1.POST("/upload/file", f.UploadFile)
 	}
 	return r
-}
-
-//读取配置文件，初始化令牌桶
-func initBuckets() {
-	for _, lv := range global.Config.Limiter {
-		buckets = append(buckets, limiter.BucketRule{
-			Key:          lv.Key,
-			FillInterval: lv.FillInterval * time.Second,
-			Capacity:     lv.Capacity,
-			Quantum:      lv.Quantum,
-		})
-	}
 }

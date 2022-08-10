@@ -51,12 +51,12 @@ func init() {
 	//前提：create database blog_service;
 	err = model.InitDBEngine()
 	if err != nil {
-		log.Fatalf("[database] %v", err)
+		global.Logger.Fatalf("[database] %v", err)
 	}
 
 	err = tracer.InitTracer(serviceName, agentHostPort)
 	if err != nil {
-		log.Fatalf("[tracer] %v", err)
+		global.Logger.Fatalf("[tracer] %v", err)
 	}
 }
 

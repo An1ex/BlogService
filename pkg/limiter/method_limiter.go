@@ -2,18 +2,24 @@ package limiter
 
 import (
 	"strings"
+	"time"
+
+	"BlogService/global"
 
 	"github.com/gin-gonic/gin"
 	"github.com/juju/ratelimit"
 )
 
+var buckets []BucketRule
+
 type MethodLimiter struct {
 	*Limiter
 }
 
-func NewMethodLimiter() MethodLimiter {
+func NewMethodLimiter() InterfaceLimiter {
+	initBuckets()
 	l := &Limiter{map[string]*ratelimit.Bucket{}}
-	return MethodLimiter{l}
+	return MethodLimiter{l}.AddBuckets(buckets...)
 }
 
 // Key 以路由的相对路径作为令牌桶映射的键
@@ -40,4 +46,16 @@ func (l MethodLimiter) AddBuckets(rules ...BucketRule) InterfaceLimiter {
 		}
 	}
 	return l
+}
+
+//读取配置文件，初始化令牌桶
+func initBuckets() {
+	for _, lv := range global.Config.Limiter {
+		buckets = append(buckets, BucketRule{
+			Key:          lv.Key,
+			FillInterval: lv.FillInterval * time.Second,
+			Capacity:     lv.Capacity,
+			Quantum:      lv.Quantum,
+		})
+	}
 }

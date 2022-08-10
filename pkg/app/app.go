@@ -22,12 +22,6 @@ func NewResponse(c *gin.Context) *Response {
 }
 
 func (r *Response) ToResponse(data interface{}) {
-	if data == nil {
-		data = gin.H{
-			"code": errcode.Success.Code,
-			"msg":  errcode.Success.Msg,
-		}
-	}
 	r.ctx.JSON(http.StatusOK, gin.H{
 		"code":    errcode.Success.Code,
 		"msg":     errcode.Success.Msg,
@@ -37,26 +31,23 @@ func (r *Response) ToResponse(data interface{}) {
 
 func (r *Response) ToResponseList(list interface{}, totalRows int) {
 	r.ctx.JSON(http.StatusOK, gin.H{
-		"list": list,
-		"pager": Pager{
-			Page:      GetPage(r.ctx),
-			PageSize:  GetPageSize(r.ctx),
-			TotalRows: totalRows,
+		"code": errcode.Success.Code,
+		"msg":  errcode.Success.Msg,
+		"details": gin.H{
+			"list": list,
+			"pager": Pager{
+				Page:      GetPage(r.ctx),
+				PageSize:  GetPageSize(r.ctx),
+				TotalRows: totalRows,
+			},
 		},
 	})
 }
 
-func (r Response) ToErrorResponse(err *errcode.Error) {
-	if len(err.Details) > 0 {
-		r.ctx.JSON(err.StatusCode(), gin.H{
-			"code":    err.Code,
-			"msg":     err.Msg,
-			"details": err.Details,
-		})
-	} else {
-		r.ctx.JSON(err.StatusCode(), gin.H{
-			"code": err.Code,
-			"msg":  err.Msg,
-		})
-	}
+func (r *Response) ToErrorResponse(err *errcode.Error) {
+	r.ctx.JSON(err.StatusCode(), gin.H{
+		"code":    err.Code,
+		"msg":     err.Msg,
+		"details": err.Details,
+	})
 }
